@@ -1,0 +1,15 @@
+---
+- include_tasks: "install-{{ ansible_os_family }}.yml"
+
+- name: Install PIP
+  package:
+    name: "{{ 'python-pip' if pip_version == 2 else 'python%(pip_version)-pip' }}"
+    state: present
+
+- name: Install PIP packages
+  pip:
+    name: "{{ item.name | default(item) }}"
+    version: "{{ item.version | default(omit) }}"
+    virtualenv: "{{ item.virtualenv | default(omit) }}"
+    state: "{{ item.state | default(omit) }}"
+  with_items: "{{ pip_install_packages }}"
